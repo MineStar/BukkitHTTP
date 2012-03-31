@@ -194,7 +194,7 @@ public class HTTPHandler implements HttpHandler {
     // /////////////////////
     private List<String> getCookiesFromHeader(HttpExchange exchange) {
         Headers head = exchange.getRequestHeaders();
-        List<String> cookie = head.get("Set-Cookie");
+        List<String> cookie = head.get("Cookie");
         if (cookie != null) {
             if (cookie.size() > 0) {
                 return cookie;
@@ -210,11 +210,14 @@ public class HTTPHandler implements HttpHandler {
     // /////////////////////
     private boolean getCookieLogin(HttpExchange exchange) {
         Headers head = exchange.getRequestHeaders();
-        List<String> cookie = head.get("Set-Cookie");
+        List<String> cookie = head.get("Cookie");
+        boolean f = false;
         if (cookie != null) {
             if (cookie.size() > 0) {
                 for (String tmp : cookie) {
-                    return userIsLoggedIn(tmp);
+                    f = userIsLoggedIn(tmp);
+                    if (f)
+                        return true;
                 }
             }
         }
