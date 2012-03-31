@@ -1,9 +1,12 @@
 package com.bukkit.gemo.BukkitHTTP;
 
 import com.sun.net.httpserver.*;
+
+import java.io.File;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
 import org.bukkit.Server;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class HTTPCore extends JavaPlugin {
@@ -12,6 +15,8 @@ public class HTTPCore extends JavaPlugin {
 
     public static HttpServer httpServer = null;
     public static HTTPHandler httpHandler = null;
+
+    private int PORT = 8000;
 
     // ////////////////////////////////
     //
@@ -42,21 +47,42 @@ public class HTTPCore extends JavaPlugin {
     // ////////////////////////////////
     @Override
     public void onEnable() {
+        this.getDataFolder().mkdirs();
         HTTPCore.server = getServer();
+
+        this.loadSettings();
+
         // CREATE WEBSERVER
         try {
             httpHandler = new HTTPHandler();
-            InetSocketAddress addr = new InetSocketAddress(8000);
+            InetSocketAddress addr = new InetSocketAddress(PORT);
             httpServer = HttpServer.create(addr, 0);
             httpServer.createContext("/", httpHandler);
             httpServer.setExecutor(Executors.newCachedThreadPool());
             httpServer.start();
-            printInConsole("HTTP-Server started on port 8000.");
+            printInConsole("HTTP-Server started on port " + PORT + ".");
         } catch (Exception e) {
             printInConsole("SERVER NOT STARTED!");
         }
     }
 
+    private void loadSettings() {
+        File file = new File(this.getDataFolder(), "config.yml");
+        try {
+            if (!file.exists()) {
+                YamlConfiguration config = new YamlConfiguration();
+                config.set("port", this.PORT);
+                config.save(file);
+                return;
+            }
+
+            YamlConfiguration config = new YamlConfiguration();
+            config.load(file);
+            this.PORT = config.getInt("port", 8000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     // ////////////////////////////////
     //
     // REGISTER PLUGIN
