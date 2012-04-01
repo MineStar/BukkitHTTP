@@ -17,6 +17,9 @@ public class HTTPCore extends JavaPlugin {
     public static HTTPHandler httpHandler = null;
 
     private int PORT = 8000;
+    private int MAX_COOKIE_AGE = 6000;
+
+    private static HTTPCore instance;
 
     // ////////////////////////////////
     //
@@ -47,6 +50,7 @@ public class HTTPCore extends JavaPlugin {
     // ////////////////////////////////
     @Override
     public void onEnable() {
+        instance = this;
         this.getDataFolder().mkdirs();
         HTTPCore.server = getServer();
 
@@ -72,13 +76,15 @@ public class HTTPCore extends JavaPlugin {
             if (!file.exists()) {
                 YamlConfiguration config = new YamlConfiguration();
                 config.set("port", this.PORT);
+                config.set("maxCookieAge", this.MAX_COOKIE_AGE);
                 config.save(file);
                 return;
             }
 
             YamlConfiguration config = new YamlConfiguration();
             config.load(file);
-            this.PORT = config.getInt("port", 8000);
+            this.PORT = config.getInt("port", this.PORT);
+            this.MAX_COOKIE_AGE = config.getInt("maxCookieAge", this.MAX_COOKIE_AGE);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -116,5 +122,16 @@ public class HTTPCore extends JavaPlugin {
             printInConsole("Virtual folder '" + plugin.getRootAlias() + "' is already registered by '" + httpHandler.registeredPlugins.get(plugin.getRootAlias()).getPluginName() + "'!");
             return false;
         }
+    }
+
+    public int getMaxCookieAge() {
+        return MAX_COOKIE_AGE;
+    }
+
+    /**
+     * @return the instance
+     */
+    public static HTTPCore getInstance() {
+        return instance;
     }
 }

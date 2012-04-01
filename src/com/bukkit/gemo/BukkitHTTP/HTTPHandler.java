@@ -305,7 +305,7 @@ public class HTTPHandler implements HttpHandler {
                         String login = plugin.loginSuccessful(event);
                         if (login != null) {
                             // SET COOKIES
-                            responseHeaders.set("Set-Cookie", "LoggedIn=true#" + login + "; Max-Age=600;  Path=/" + plugin.getRootAlias() + "; Version=\"1\"");
+                            responseHeaders.set("Set-Cookie", "LoggedIn=true#" + login + "; Max-Age=" + HTTPCore.getInstance().getMaxCookieAge() + ";  Path=/" + plugin.getRootAlias() + "; Version=\"1\"");
                             // REDIRECT TO MAINPAGE
                             exchange.sendResponseHeaders(200, 0);
                             String cookie = "LoggedIn=true#" + login;
