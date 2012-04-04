@@ -250,7 +250,7 @@ public class HTTPHandler implements HttpHandler {
         List<String> cookies = getCookiesFromHeader(exchange);
         if (registeredPlugins.containsKey(root)) {
             HTTPPlugin plugin = registeredPlugins.get(root);
-
+            
             String contentType = getContentType(root + reqFile);
             Headers responseHeaders = exchange.getResponseHeaders();
             OutputStream responseBody = exchange.getResponseBody();
